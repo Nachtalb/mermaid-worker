@@ -26,14 +26,18 @@
   const post = (format, scale) =>
     fetch(`/render?format=${format}&scale=${scale}`, { method: 'POST', body: $('i').value });
 
+  // 400 = our own error text; anything else is a Cloudflare error page (HTML).
+  const errText = async (res) =>
+    res.status === 400 ? await res.text() : `Rendering failed (HTTP ${res.status}). The worker hit Cloudflare's limits, try again or use a smaller scale.`;
+
   async function preview() {
     const res = await post('svg', 1);
-    $('o').innerHTML = res.ok ? await res.text() : '<pre>' + (await res.text()).replace(/</g, '&lt;') + '</pre>';
+    $('o').innerHTML = res.ok ? await res.text() : '<pre>' + (await errText(res)).replace(/</g, '&lt;') + '</pre>';
   }
 
   $('d').onclick = async () => {
     const f = $('f').value, res = await post(f, $('s').value);
-    if (!res.ok) return alert(await res.text());
+    if (!res.ok) return alert(await errText(res));
     const a = document.createElement('a');
     a.href = URL.createObjectURL(await res.blob());
     a.download = 'diagram.' + f;
