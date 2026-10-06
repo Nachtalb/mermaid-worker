@@ -758,7 +758,7 @@ dependencies = [
 [[package]]
 name = "mermaid-rs-renderer"
 version = "0.3.1"
-source = "git+https://github.com/Nachtalb/mermaid-rs-renderer?branch=wasm-support#e558edf072c6e6544520266e79fed85e08dca09d"
+source = "git+https://github.com/Nachtalb/mermaid-rs-renderer?branch=worker#8d3ee1561dd0fbdee5b43926882fac9c6d696889"
 dependencies = [
  "anyhow",
  "fontdb",
