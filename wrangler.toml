@@ -1,6 +1,7 @@
 name = "mermaid-worker"
 main = "build/worker/shim.mjs"
 compatibility_date = "2026-01-01"
+routes = [{ pattern = "mmd.naa.gg", custom_domain = true }]
 
 [build]
 command = "cargo install -q worker-build@^0.8 && worker-build --release"
