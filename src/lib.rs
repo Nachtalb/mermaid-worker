@@ -6,7 +6,8 @@ use worker::*;
 const PAGE: &str = include_str!("index.html");
 const FONT_REGULAR: &[u8] = include_bytes!("../fonts/LiberationSans-Regular.ttf");
 const FONT_BOLD: &[u8] = include_bytes!("../fonts/LiberationSans-Bold.ttf");
-const MAX_PIXELS: u32 = 16_000_000;
+// The 128 MB isolate memory is shared by concurrent requests, so keep each pixmap small.
+const MAX_PIXELS: u32 = 6_000_000;
 
 fn fontdb() -> Arc<usvg::fontdb::Database> {
     static DB: OnceLock<Arc<usvg::fontdb::Database>> = OnceLock::new();
