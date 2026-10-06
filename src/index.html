@@ -5,8 +5,9 @@
 <style>
   body { display: flex; gap: 1em; font-family: sans-serif; margin: 1em; }
   #l { display: flex; flex-direction: column; gap: .5em; width: 40vw; }
-  textarea { height: 85vh; font-family: monospace; }
+  textarea { height: 70vh; font-family: monospace; }
   #o { flex: 1; overflow: auto; }
+  pre#c { background: #f4f4f4; padding: .5em; margin: 0; white-space: pre-wrap; word-break: break-all; }
 </style>
 <div id="l">
   <textarea id="i">flowchart LR
@@ -18,6 +19,7 @@
     <select id="s"><option value="1">1x</option><option value="2" selected>2x</option><option value="4">4x</option></select>
     <button id="d">Download</button>
   </div>
+  <pre id="c"></pre>
 </div>
 <div id="o"></div>
 <script>
@@ -28,7 +30,7 @@
 
   // 400 = our own error text; anything else is a Cloudflare error page (HTML).
   const errText = async (res) =>
-    res.status === 400 ? await res.text() : `Rendering failed (HTTP ${res.status}). The worker hit Cloudflare's limits, try again or use a smaller scale.`;
+    res.status === 400 ? await res.text() : `Rendering failed (HTTP ${res.status}). The worker hit Cloudflare's limits, try again.`;
 
   async function preview() {
     const res = await post('svg', 1);
@@ -44,6 +46,12 @@
     a.click();
     URL.revokeObjectURL(a.href);
   };
+  function curl() {
+    const f = $('f').value, q = f === 'svg' ? 'format=svg' : `format=${f}&scale=${$('s').value}`;
+    $('c').textContent = `curl --data-binary @diagram.mmd \\\n  '${location.origin}/render?${q}' \\\n  -o diagram.${f}`;
+  }
+  $('f').onchange = $('s').onchange = curl;
+  curl();
   $('i').oninput = () => { clearTimeout(t); t = setTimeout(preview, 250); };
   preview();
 </script>
