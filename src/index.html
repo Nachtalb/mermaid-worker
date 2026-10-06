@@ -1,0 +1,45 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>mermaid-worker</title>
+<style>
+  body { display: flex; gap: 1em; font-family: sans-serif; margin: 1em; }
+  #l { display: flex; flex-direction: column; gap: .5em; width: 40vw; }
+  textarea { height: 85vh; font-family: monospace; }
+  #o { flex: 1; overflow: auto; }
+</style>
+<div id="l">
+  <textarea id="i">flowchart LR
+  A[Start] --> B{Ok?}
+  B -->|yes| C[Done]
+  B -->|no| A</textarea>
+  <div>
+    <select id="f"><option>png</option><option>webp</option><option>avif</option><option>svg</option></select>
+    <select id="s"><option value="1">1x</option><option value="2" selected>2x</option><option value="4">4x</option></select>
+    <button id="d">Download</button>
+  </div>
+</div>
+<div id="o"></div>
+<script>
+  const $ = (id) => document.getElementById(id);
+  let t;
+  const post = (format, scale) =>
+    fetch(`/render?format=${format}&scale=${scale}`, { method: 'POST', body: $('i').value });
+
+  async function preview() {
+    const res = await post('svg', 1);
+    $('o').innerHTML = res.ok ? await res.text() : '<pre>' + (await res.text()).replace(/</g, '&lt;') + '</pre>';
+  }
+
+  $('d').onclick = async () => {
+    const f = $('f').value, res = await post(f, $('s').value);
+    if (!res.ok) return alert(await res.text());
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(await res.blob());
+    a.download = 'diagram.' + f;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  };
+  $('i').oninput = () => { clearTimeout(t); t = setTimeout(preview, 250); };
+  preview();
+</script>
