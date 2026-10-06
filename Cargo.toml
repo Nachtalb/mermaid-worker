@@ -1,0 +1,18 @@
+[package]
+name = "mermaid-worker"
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+authors = ["Nachtalb <na@nachtalb.io>"]
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+worker = "0.8.7"
+mermaid-rs-renderer = { git = "https://github.com/Nachtalb/mermaid-rs-renderer", branch = "wasm-support", default-features = false }
+
+[profile.release]
+lto = true
+opt-level = "z"
+codegen-units = 1
